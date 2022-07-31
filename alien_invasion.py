@@ -6,10 +6,11 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
+from alien import Alien
 
 
 class AlienInvasion:
-    """Overall clas to mange game assests and behavior"""
+    """Overall class to mange game assests and behavior"""
 
     def __init__(self):
         """Initialize the game, and create game resources."""
@@ -23,9 +24,12 @@ class AlienInvasion:
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
 
+        self._create_fleet()
+        
         # Set the background color
-        self.bg_color = (230,230,230)
+        # self.bg_color = (230,230,230)
         
     def run_game(self):
         """Start the main loop for the game."""
@@ -83,14 +87,35 @@ class AlienInvasion:
             self.bullets.add(new_bullet)
     
     
+    
+    def _create_fleet(self):
+        """Create the fleet of aliens."""
+        """Creat an aline and find the nubmer of aliens in a row."""
+        """Spacing between each alien is equal to one alien width."""
+        # Make an alien
+        alien = Alien(self)
+        alien_width, alien.height = alien.rect.size
+        available_space_x = self.settings.screen_width - (2 * alien_width)
+        number_aliens_x = available_space_x // (2 * alien_width)
+
+        # Create the first row of aliens.
+        for alien_number in range(number_aliens_x):
+            #Create an alien and place it in the row
+            alien = Alien(self)
+            alien.x = alien_width + 2 * alien_width * alien_number
+            alien.rect.x = alien.x
+            self.aliens.add(alien)
+
     def _update_screen(self):        
-            """update images on the screen, and flip to the new screen"""
-            self.screen.fill(self.settings.bg_color)
-            self.ship.blitme()
-            for bullet in self.bullets.sprites():
-                bullet.draw_bullet()
-            #Make the most recently drawn screen visible.
-            pygame.display.flip()
+        """update images on the screen, and flip to the new screen"""
+        self.screen.fill(self.settings.bg_color)
+        self.ship.blitme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
+        self.aliens.draw(self.screen)
+        #Make the most recently drawn screen visible.
+        pygame.display.flip()
+
 if __name__ == '__main__':
     # Make a game instance, and run the the game.
     ai = AlienInvasion()
